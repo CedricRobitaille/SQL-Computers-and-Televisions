@@ -52,3 +52,34 @@ SELECT * FROM computers;
 
 -- Alter the computers_models, removing the storage_amount column
 -- and add storage_type and storage_size columns
+
+ALTER TABLE computers ADD COLUMN storage_type VARCHAR(2);
+ALTER TABLE computers ADD COLUMN storage_size INT;
+
+SELECT * FROM computers;
+ id | make  |         model         | ... | storage_amount | ... | storage_type | storage_size
+----+-------+-----------------------+-----+----------------+-----+--------------+--------------
+  1 | Apple | Mac Book Pro Max Mini | ... | 1TB            | ... |              |
+  2 | Apple | Mac Book Pro Max      | ... | 1TB            | ... |              |
+  3 | Apple | Mac Book Air          | ... | 268gb          | ... |              |
+  4 | Apple | Mac Book              | ... | 128gb          | ... |              |
+(4 rows)
+
+-- Using the Regular Expressions (REGEXP), we can preserve the data saved in the `storage_amount` column, by parsing it into the new cols.
+-- I learned about this here: https://www.geeksforgeeks.org/postgresql/working-with-regular-expressions-in-postgresql/
+-- REGEX uses the following documentation: `regexp_replace(source, pattern, replacement, flats)
+-- For pattern, to keep NUMS, we do [0-9], to keep everything BUT nums, we can do [^0-9]
+-- Finally, to convert the number string into an actual INTEGER, we cast it with the ::INT at the end.
+UPDATE computers SET storage_size = REGEXP_REPLACE(storage_amount, '[^0-9]', '', 'g')::INT;
+UPDATE computers SET storage_type = REGEXP_REPLACE(storage_amount, '[0-9]', '', 'g');
+
+ALTER TABLE computers DROP COLUMN storage_amount;
+
+SELECT * FROM computers;
+ id | make  |         model         | cpu_speed | memory_size |  price  |    release_date     |   photo_url   | number_usb_ports | number_firewire_ports | number_thunderbolt_ports | storage_type | storage_size
+----+-------+-----------------------+-----------+-------------+---------+---------------------+---------------+------------------+-----------------------+--------------------------+--------------+--------------
+  1 | Apple | Mac Book Pro Max Mini | 200GHz    | 32gb        | 1999.99 | 2023-09-21 00:00:00 | images/01.png |                3 |                     0 |                        1 | TB           |            1
+  2 | Apple | Mac Book Pro Max      | 1500GHz   | 64gb        | 2749.99 | 2024-09-21 00:00:00 | images/02.png |                4 |                     0 |                        0 | TB           |            1
+  3 | Apple | Mac Book Air          | 100GHz    | 16gb        |  999.99 | 2023-09-21 00:00:00 | images/03.png |                2 |                     1 |                        1 | gb           |          268
+  4 | Apple | Mac Book              | 500GHz    | 32gb        |  149.99 | 2021-09-21 00:00:00 | images/04.png |                2 |                     1 |                        1 | gb           |          128
+(4 rows)
