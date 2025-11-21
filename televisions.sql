@@ -7,11 +7,21 @@
 
 
 -- Create a televisions table
-
+CREATE TABLE televisions ( id serial PRIMARY KEY );
 
 --  The table should have id, model_name, screen_size, resolution,
 --  price, release_date, photo_url
+ALTER TABLE televisions ADD COLUMN model_name VARCHAR(32);
+ALTER TABLE televisions ADD COLUMN screen_size VARCHAR(12);
+ALTER TABLE televisions ADD COLUMN resolution VARCHAR(12);
+ALTER TABLE televisions ADD COLUMN price INT;
+ALTER TABLE televisions ADD COLUMN release_date TIMESTAMP;
+ALTER TABLE televisions ADD COLUMN photo_url text;
 
+SELECT * FROM televisions;
+ id | model_name | screen_size | resolution | price | release_date | photo_url
+----+------------+-------------+------------+-------+--------------+-----------
+(0 rows)
 
 -- Insert 4 televisions into the tv_models table
 
